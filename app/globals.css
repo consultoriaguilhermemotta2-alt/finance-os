@@ -1,0 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* ── Ledger palette ─────────────────────────────── */
+  --color-bg:        #0A1815;
+  --color-surface:   #11241F;
+  --color-surface-2: #16302A;
+  --color-surface-3: #1C3933;
+  --color-border:    #223D36;
+  --color-border-2:  #2C4A42;
+
+  /* Accent — vault gold */
+  --color-gold:     #D9A94F;
+  --color-gold-dim: #8A6F33;
+
+  /* Semantic */
+  --color-income:   #6FCF97;
+  --color-income-dim: #2F4A3C;
+  --color-expense:  #E0825C;
+  --color-expense-dim: #4A352C;
+  --color-info:     #6FAEDB;
+  --color-info-dim: #2C3F4C;
+  --color-purple:   #B89AE0;
+
+  /* Text */
+  --color-ink:      #F3EFE6;
+  --color-ink-soft: #A9BDB6;
+  --color-ink-mute: #5E7972;
+
+  --font-display: "Fraunces", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background-color: #0A1815;
+  color: #F3EFE6;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #11241F; }
+::-webkit-scrollbar-thumb { background: #2C4A42; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #D9A94F; }
+
+/* ── Tabular numerals everywhere money appears ───── */
+.tabular {
+  font-family: "IBM Plex Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.font-display { font-family: "Fraunces", serif; }
+
+/* ── Card primitives ──────────────────────────────── */
+.card {
+  background-color: #11241F;
+  border: 1px solid #223D36;
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+}
+
+.card-hover {
+  background-color: #11241F;
+  border: 1px solid #223D36;
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+  transition: border-color 0.15s ease;
+}
+.card-hover:hover { border-color: #2C4A42; }
+
+/* ── Ledger stub — signature element ─────────────── */
+/* 4px colored tab on the left edge, like a checkbook register */
+.stub {
+  position: relative;
+  border-left: 3px solid transparent;
+  padding-left: 1rem;
+}
+.stub-income  { border-left-color: #6FCF97; }
+.stub-expense { border-left-color: #E0825C; }
+.stub-gold    { border-left-color: #D9A94F; }
+.stub-info    { border-left-color: #6FAEDB; }
+.stub-mute    { border-left-color: #2C4A42; }
+
+/* ── Buttons ──────────────────────────────────────── */
+.btn-primary {
+  background-color: #D9A94F;
+  color: #0A1815;
+  font-weight: 600;
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.6rem;
+  font-size: 0.8125rem;
+  transition: background-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+.btn-primary:hover { background-color: #E8BC6E; }
+
+.btn-ghost {
+  color: #A9BDB6;
+  padding: 0.55rem 0.85rem;
+  border-radius: 0.6rem;
+  font-size: 0.8125rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.btn-ghost:hover { color: #F3EFE6; background-color: #16302A; }
+
+.btn-icon {
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  color: #5E7972;
+  transition: all 0.15s ease;
+  display: inline-flex;
+}
+.btn-icon:hover { color: #F3EFE6; background-color: #16302A; }
+
+/* ── Inputs ───────────────────────────────────────── */
+.input {
+  background-color: #16302A;
+  border: 1px solid #2C4A42;
+  border-radius: 0.55rem;
+  padding: 0.55rem 0.75rem;
+  color: #F3EFE6;
+  font-size: 0.8125rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.input::placeholder { color: #5E7972; }
+.input:focus { border-color: #D9A94F; }
+.input:focus-visible { outline: 2px solid #D9A94F; outline-offset: 1px; }
+
+/* ── Badges ───────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Section labels ───────────────────────────────── */
+.section-title {
+  color: #5E7972;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* ── Focus visibility (accessibility) ────────────── */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid #D9A94F;
+  outline-offset: 2px;
+}
+
+/* ── Reduced motion ───────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
