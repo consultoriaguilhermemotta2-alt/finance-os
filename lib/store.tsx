@@ -35,11 +35,11 @@ interface FinanceContextType {
   dividas: Divida[];
   metas: Meta[];
 
-  addEntrada: (e: Omit<Entrada, "id">) => void;
+  addEntrada: (e: Omit<Entrada, "id" | "userId">) => void;
   updateEntrada: (id: string, patch: Partial<Entrada>) => void;
   deleteEntrada: (id: string) => void;
 
-  addSaida: (s: Omit<Saida, "id">) => void;
+  addSaida: (s: Omit<Saida, "id" | "userId">) => void;
   updateSaida: (id: string, patch: Partial<Saida>) => void;
   deleteSaida: (id: string) => void;
 
@@ -56,28 +56,31 @@ interface FinanceContextType {
   toggleParcela: (compraId: string, numero: number) => void;
   deleteCompraCartao: (id: string) => void;
 
-  addDivida: (d: Omit<Divida, "id">) => void;
+  addDivida: (d: Omit<Divida, "id" | "userId">) => void;
   updateDivida: (id: string, patch: Partial<Divida>) => void;
   deleteDivida: (id: string) => void;
 
-  addMeta: (m: Omit<Meta, "id">) => void;
+  addMeta: (m: Omit<Meta, "id" | "userId">) => void;
   updateMeta: (id: string, patch: Partial<Meta>) => void;
   deleteMeta: (id: string) => void;
 }
 
 const FinanceContext = createContext<FinanceContextType | null>(null);
 
-export function FinanceProvider({ children }: { children: ReactNode }) {
-  const [entradas, setEntradas] = useState<Entrada[]>(mockEntradas);
-  const [saidas, setSaidas] = useState<Saida[]>(mockSaidas);
-  const [cartoes, setCartoes] = useState<Cartao[]>(mockCartoes);
-  const [comprasCartao, setComprasCartao] = useState<CompraCartao[]>(mockCompras);
-  const [dividas, setDividas] = useState<Divida[]>(mockDividas);
-  const [metas, setMetas] = useState<Meta[]>(mockMetas);
+export function FinanceProvider({ children, userId }: { children: ReactNode; userId: string }) {
+  // Re-associa os dados de exemplo ao usuário autenticado (substitui o
+  // placeholder SEED_USER_ID). Em produção, isto seria o resultado de
+  // `supabase.from("entradas").select().eq("user_id", userId)` etc.
+  const [entradas, setEntradas] = useState<Entrada[]>(() => mockEntradas.map((e) => ({ ...e, userId })));
+  const [saidas, setSaidas] = useState<Saida[]>(() => mockSaidas.map((s) => ({ ...s, userId })));
+  const [cartoes, setCartoes] = useState<Cartao[]>(() => mockCartoes.map((c) => ({ ...c, userId })));
+  const [comprasCartao, setComprasCartao] = useState<CompraCartao[]>(() => mockCompras.map((c) => ({ ...c, userId })));
+  const [dividas, setDividas] = useState<Divida[]>(() => mockDividas.map((d) => ({ ...d, userId })));
+  const [metas, setMetas] = useState<Meta[]>(() => mockMetas.map((m) => ({ ...m, userId })));
 
   // ── Entradas ──
   const addEntrada: FinanceContextType["addEntrada"] = (e) =>
-    setEntradas((p) => [{ ...e, id: uid("e") }, ...p]);
+    setEntradas((p) => [{ ...e, id: uid("e"), userId }, ...p]);
   const updateEntrada: FinanceContextType["updateEntrada"] = (id, patch) =>
     setEntradas((p) => p.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   const deleteEntrada: FinanceContextType["deleteEntrada"] = (id) =>
@@ -85,7 +88,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
   // ── Saídas ──
   const addSaida: FinanceContextType["addSaida"] = (s) =>
-    setSaidas((p) => [{ ...s, id: uid("s") }, ...p]);
+    setSaidas((p) => [{ ...s, id: uid("s"), userId }, ...p]);
   const updateSaida: FinanceContextType["updateSaida"] = (id, patch) =>
     setSaidas((p) => p.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   const deleteSaida: FinanceContextType["deleteSaida"] = (id) =>
@@ -93,13 +96,14 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
   // ── Cartões ──
   const addCartao: FinanceContextType["addCartao"] = (nome, responsavel, cor) =>
-    setCartoes((p) => [...p, { id: uid("cartao"), nome, responsavel, cor }]);
+    setCartoes((p) => [...p, { id: uid("cartao"), userId, nome, responsavel, cor }]);
 
   // ── Compras no cartão ──
   const addCompraCartao: FinanceContextType["addCompraCartao"] = (input) => {
     const valorParcela = Math.round((input.valorTotal / input.numeroParcelas) * 100) / 100;
     const nova: CompraCartao = {
       id: uid("compra"),
+      userId,
       cartaoId: input.cartaoId,
       descricao: input.descricao,
       valorTotal: input.valorTotal,
@@ -133,7 +137,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
   // ── Dívidas ──
   const addDivida: FinanceContextType["addDivida"] = (d) =>
-    setDividas((p) => [{ ...d, id: uid("divida") }, ...p]);
+    setDividas((p) => [{ ...d, id: uid("divida"), userId }, ...p]);
   const updateDivida: FinanceContextType["updateDivida"] = (id, patch) =>
     setDividas((p) => p.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   const deleteDivida: FinanceContextType["deleteDivida"] = (id) =>
@@ -141,7 +145,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
   // ── Metas ──
   const addMeta: FinanceContextType["addMeta"] = (m) =>
-    setMetas((p) => [{ ...m, id: uid("meta") }, ...p]);
+    setMetas((p) => [{ ...m, id: uid("meta"), userId }, ...p]);
   const updateMeta: FinanceContextType["updateMeta"] = (id, patch) =>
     setMetas((p) => p.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   const deleteMeta: FinanceContextType["deleteMeta"] = (id) =>

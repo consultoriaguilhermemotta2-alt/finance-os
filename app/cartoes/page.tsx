@@ -46,68 +46,36 @@ function CompraRow({ compra, onToggle, onDelete }: {
 
   return (
     <div className="border border-border rounded-lg overflow-hidden">
-      <div
-        role="button"
-        tabIndex={0}
+      <button
         onClick={() => setOpen((o) => !o)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            setOpen((o) => !o);
-          }
-        }}
-        className="w-full flex items-center gap-3 p-3 text-left hover:bg-surface-2/50 transition-colors cursor-pointer"
+        className="w-full flex items-center gap-3 p-3 text-left hover:bg-surface-2/50 transition-colors"
       >
-        {open ? (
-          <ChevronDown size={14} className="text-ink-mute shrink-0" />
-        ) : (
-          <ChevronRight size={14} className="text-ink-mute shrink-0" />
-        )}
-
+        {open ? <ChevronDown size={14} className="text-ink-mute shrink-0" /> : <ChevronRight size={14} className="text-ink-mute shrink-0" />}
         <div className="flex-1 min-w-0">
-          <p className="text-ink text-sm font-medium truncate">
-            {compra.descricao}
-          </p>
-
+          <p className="text-ink text-sm font-medium truncate">{compra.descricao}</p>
           <p className="text-ink-mute text-xs">
-            {formatDate(compra.dataCompra)} ·{" "}
-            {quitada
-              ? "Quitada"
-              : `${pagas}/${compra.numeroParcelas} parcelas pagas`}
+            {formatDate(compra.dataCompra)} · {quitada ? "Quitada" : `${pagas}/${compra.numeroParcelas} parcelas pagas`}
           </p>
         </div>
-
         <div className="text-right shrink-0">
           <Money value={compra.valorTotal} />
-
-          <p className="text-ink-mute text-xs tabular">
-            {compra.numeroParcelas}x {formatBRL(compra.valorParcela)}
-          </p>
+          <p className="text-ink-mute text-xs tabular">{compra.numeroParcelas}x {formatBRL(compra.valorParcela)}</p>
         </div>
-
         <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(compra.id);
-          }}
+          onClick={(e) => { e.stopPropagation(); onDelete(compra.id); }}
           className="btn-icon hover:text-expense shrink-0"
           title="Excluir compra"
         >
           <Trash2 size={13} />
         </button>
-      </div>
+      </button>
 
       {open && (
         <div className="px-3 pb-3 pt-1 border-t border-border bg-surface-2/30">
-          <p className="text-ink-mute text-xs mb-2">
-            Clique numa parcela para marcar como paga / pendente
-          </p>
-
+          <p className="text-ink-mute text-xs mb-2">Clique numa parcela para marcar como paga / pendente</p>
           <div className="flex flex-wrap gap-1.5">
             {compra.parcelas.map((p) => (
               <button
-                type="button"
                 key={p.numero}
                 onClick={() => onToggle(compra.id, p.numero)}
                 className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs border transition-colors ${
@@ -116,19 +84,9 @@ function CompraRow({ compra, onToggle, onDelete }: {
                     : "bg-surface text-ink-soft border-border hover:border-gold/40"
                 }`}
               >
-                {p.status === "paga" ? (
-                  <Check size={11} />
-                ) : (
-                  <Circle size={11} />
-                )}
-
-                <span className="tabular">
-                  {p.numero}/{compra.numeroParcelas}
-                </span>
-
-                <span className="text-ink-mute">
-                  {formatMonthShort(p.mesReferencia)}
-                </span>
+                {p.status === "paga" ? <Check size={11} /> : <Circle size={11} />}
+                <span className="tabular">{p.numero}/{compra.numeroParcelas}</span>
+                <span className="text-ink-mute">{formatMonthShort(p.mesReferencia)}</span>
               </button>
             ))}
           </div>

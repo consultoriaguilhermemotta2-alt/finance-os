@@ -1,6 +1,10 @@
 import type { Entrada, Saida, Cartao, CompraCartao, Divida, Meta } from "./types";
 import { gerarParcelas } from "./utils";
 
+// Placeholder até a sessão real ser carregada — ver lib/store.tsx, que
+// re-associa (ou substitui) estes registros ao `user_id` autenticado.
+export const SEED_USER_ID = "seed";
+
 // ============================================================================
 // ENTRADAS
 // ----------------------------------------------------------------------------
@@ -8,7 +12,7 @@ import { gerarParcelas } from "./utils";
 // junho de 2026. Junho (mês atual) mistura "recebido" e "previsto" para
 // alimentar o cálculo de saldo real vs. previsto no Dashboard.
 // ============================================================================
-export const entradas: Entrada[] = [
+const rawEntradas: Omit<Entrada, "userId">[] = [
   // ── Abril 2026 ──
   { id: "e-abr-1", data: "2026-04-01", categoria: "Consultoria", descricao: "Mensalidades consultoria — abril", valor: 1800, status: "recebido", formaRecebimento: "Pix" },
   { id: "e-abr-2", data: "2026-04-05", categoria: "Treino individualizado", descricao: "Treinos individuais — abril", valor: 390, status: "recebido", formaRecebimento: "Pix" },
@@ -32,13 +36,15 @@ export const entradas: Entrada[] = [
   { id: "e-jun-6", data: "2026-06-28", categoria: "Consultoria", descricao: "Fechamento novo cliente", valor: 510, status: "previsto", formaRecebimento: "Pix" },
 ];
 
+export const entradas: Entrada[] = rawEntradas.map((e) => ({ ...e, userId: SEED_USER_ID }));
+
 // ============================================================================
 // SAÍDAS
 // ----------------------------------------------------------------------------
 // Gastos fixos importados da planilha (total R$960,21), aplicados em
 // abril/maio (já liquidados) e junho (status reais da planilha).
 // ============================================================================
-const gastosFixos: Omit<Saida, "id" | "data" | "status">[] = [
+const gastosFixos: Omit<Saida, "id" | "userId" | "data" | "status">[] = [
   { categoria: "Moradia",          descricao: "Conta condomínio",       valor: 82.00,  formaPagamento: "Pix/Débito" },
   { categoria: "Assinaturas",      descricao: "Telefone Vivo",          valor: 61.71,  formaPagamento: "Pix/Débito" },
   { categoria: "Pet",              descricao: "Remédio do cachorro",    valor: 80.00,  formaPagamento: "Dinheiro" },
@@ -56,6 +62,7 @@ function gerarGastosFixosDoMes(mes: "04" | "05" | "06", statuses: Saida["status"
   return gastosFixos.map((g, i) => ({
     ...g,
     id: `s-${mes}-${i + 1}`,
+    userId: SEED_USER_ID,
     data: `2026-${mes}-${String(diasVencimento[i]).padStart(2, "0")}`,
     status: statuses[i],
   }));
@@ -76,7 +83,7 @@ export const saidas: Saida[] = [
 // Um cartão por responsável + os 3 cartões pessoais do Guilherme
 // identificados na planilha como "(Mo)" = Motta.
 // ============================================================================
-export const cartoes: Cartao[] = [
+const rawCartoes: Omit<Cartao, "userId">[] = [
   { id: "cartao-nubank",      nome: "Nubank",        responsavel: "Guilherme", cor: "#B89AE0", diaFechamento: 20, diaVencimento: 28 },
   { id: "cartao-mercadopago", nome: "Mercado Pago",  responsavel: "Guilherme", cor: "#6FAEDB", diaFechamento: 18, diaVencimento: 25 },
   { id: "cartao-picpay",      nome: "PicPay",        responsavel: "Guilherme", cor: "#6FCF97", diaFechamento: 15, diaVencimento: 25 },
@@ -84,6 +91,8 @@ export const cartoes: Cartao[] = [
   { id: "cartao-namorada",    nome: "Cartão pessoal",responsavel: "Namorada",  cor: "#E0825C" },
   { id: "cartao-outros",      nome: "Outros",        responsavel: "Outros",    cor: "#5E7972" },
 ];
+
+export const cartoes: Cartao[] = rawCartoes.map((c) => ({ ...c, userId: SEED_USER_ID }));
 
 // ============================================================================
 // COMPRAS NO CARTÃO (parceladas)
@@ -99,7 +108,7 @@ function compra(
 ): CompraCartao {
   const valorTotal = Math.round(valorParcela * numeroParcelas * 100) / 100;
   return {
-    id, cartaoId, descricao, valorTotal, numeroParcelas, valorParcela, dataCompra, mesInicial,
+    id, userId: SEED_USER_ID, cartaoId, descricao, valorTotal, numeroParcelas, valorParcela, dataCompra, mesInicial,
     parcelas: gerarParcelas(valorTotal, numeroParcelas, mesInicial, parcelasPagas),
   };
 }
@@ -128,7 +137,7 @@ export const comprasCartao: CompraCartao[] = [
 // Compromissos maiores, fora do ciclo de cartão — mock representativo
 // cobrindo os 3 status possíveis.
 // ============================================================================
-export const dividas: Divida[] = [
+const rawDividas: Omit<Divida, "userId">[] = [
   {
     id: "d-consignado",
     nome: "Empréstimo pessoal",
@@ -164,12 +173,16 @@ export const dividas: Divida[] = [
   },
 ];
 
+export const dividas: Divida[] = rawDividas.map((d) => ({ ...d, userId: SEED_USER_ID }));
+
 // ============================================================================
 // METAS
 // ============================================================================
-export const metas: Meta[] = [
+const rawMetas: Omit<Meta, "userId">[] = [
   { id: "m-reserva",  nome: "Reserva de emergência",  valorAlvo: 10000, valorAtual: 3200, prazo: "2026-12-31", status: "em andamento" },
   { id: "m-nubank",   nome: "Quitar saldo Nubank",     valorAlvo: 2484,  valorAtual: 0,    prazo: "2027-01-25", status: "em andamento" },
   { id: "m-viagem",   nome: "Viagem fim de ano",       valorAlvo: 4000,  valorAtual: 4000, prazo: "2026-11-30", status: "concluída" },
   { id: "m-notebook", nome: "Trocar notebook",         valorAlvo: 6000,  valorAtual: 1200, prazo: "2027-06-30", status: "pausada" },
 ];
+
+export const metas: Meta[] = rawMetas.map((m) => ({ ...m, userId: SEED_USER_ID }));

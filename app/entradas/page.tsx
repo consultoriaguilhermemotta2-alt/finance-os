@@ -121,11 +121,11 @@ export default function EntradasPage() {
           <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute" />
           <input className="input pl-8" placeholder="Buscar descrição ou categoria..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-        <select className="input w-auto" value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value as any)}>
+        <select className="input w-auto" value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value as "todas" | CategoriaEntrada)}>
           <option value="todas">Todas categorias</option>
           {CATEGORIAS.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select className="input w-auto" value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value as any)}>
+        <select className="input w-auto" value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value as "todos" | StatusEntrada)}>
           <option value="todos">Todos status</option>
           <option value="recebido">Recebido</option>
           <option value="previsto">Previsto</option>

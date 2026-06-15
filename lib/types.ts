@@ -1,11 +1,14 @@
 // ============================================================================
 // FINANCE OS — Tipos de domínio
 // ----------------------------------------------------------------------------
-// Cada interface aqui corresponde a uma futura tabela no Supabase (nomes
-// sugeridos entre parênteses). Os campos usam snake_case apenas onde o
-// Supabase normalmente exigiria (id, created_at) e camelCase no restante
-// para manter o código React idiomático — o data layer (lib/data/*.ts) é o
-// único lugar que precisará mapear entre os dois quando a integração entrar.
+// Cada interface aqui corresponde a uma tabela no Supabase (nomes sugeridos
+// entre parênteses, ver supabase/schema.sql). Os campos usam snake_case
+// apenas onde o Supabase normalmente exigiria (id, user_id, created_at) e
+// camelCase no restante para manter o código React idiomático — o data
+// layer (lib/store.tsx) é o único lugar que precisará mapear entre os dois.
+//
+// `userId` corresponde à coluna `user_id` (FK -> auth.users.id), usada pelas
+// políticas de RLS para isolar os dados de cada usuário.
 // ============================================================================
 
 // ── ENTRADAS (tabela: entradas) ─────────────────────────────────────────────
@@ -23,6 +26,7 @@ export type StatusEntrada = "recebido" | "previsto";
 
 export interface Entrada {
   id: string;
+  userId: string;
   data: string; // ISO yyyy-mm-dd
   categoria: CategoriaEntrada;
   descricao: string;
@@ -48,6 +52,7 @@ export type StatusSaida = "pago" | "pendente" | "atrasado";
 
 export interface Saida {
   id: string;
+  userId: string;
   data: string; // ISO yyyy-mm-dd
   categoria: CategoriaSaida;
   descricao: string;
@@ -62,6 +67,7 @@ export type Responsavel = "Guilherme" | "Namorada" | "Pai" | "Outros";
 
 export interface Cartao {
   id: string;
+  userId: string;
   nome: string;
   responsavel: Responsavel;
   cor: string; // hex usado como acento visual do cartão
@@ -80,6 +86,7 @@ export interface Parcela {
 
 export interface CompraCartao {
   id: string;
+  userId: string;
   cartaoId: string;
   descricao: string;
   valorTotal: number;
@@ -95,6 +102,7 @@ export type StatusDivida = "em aberto" | "quitada" | "atrasada";
 
 export interface Divida {
   id: string;
+  userId: string;
   nome: string;
   credor: string;
   valorTotal: number;
@@ -110,6 +118,7 @@ export type StatusMeta = "em andamento" | "concluída" | "pausada";
 
 export interface Meta {
   id: string;
+  userId: string;
   nome: string;
   valorAlvo: number;
   valorAtual: number;

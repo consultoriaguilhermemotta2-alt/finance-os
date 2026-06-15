@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import {
   LayoutDashboard, ArrowDownToLine, ArrowUpFromLine, CreditCard,
-  Landmark, Target, FileBarChart, Menu, X, BookText,
+  Landmark, Target, FileBarChart, Menu, X, BookText, LogOut,
 } from "lucide-react";
 
 const nav = [
@@ -18,19 +19,17 @@ const nav = [
   { href: "/relatorio", label: "Relatório mensal",icon: FileBarChart },
 ];
 
-export default function Sidebar() {
+interface SidebarContentProps {
+  userEmail: string;
+  onLogout: () => void;
+  loggingOut: boolean;
+  onNavigate?: () => void;
+}
+
+function SidebarContent({ userEmail, onLogout, loggingOut, onNavigate }: SidebarContentProps) {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
 
-  useEffect(() => { setOpen(false); }, [pathname]);
-
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
-    document.addEventListener("keydown", h);
-    return () => document.removeEventListener("keydown", h);
-  }, []);
-
-  const Content = () => (
+  return (
     <div className="flex flex-col h-full w-56 bg-surface">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-border flex items-center gap-2.5">
@@ -51,6 +50,7 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onNavigate}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 active
                   ? "bg-gold/12 text-gold border border-gold/25"
@@ -64,17 +64,50 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="px-5 py-4 border-t border-border">
-        <p className="text-ink-mute text-xs">Dados de exemplo · pronto p/ Supabase</p>
+      {/* User + Logout */}
+      <div className="px-3 py-3 border-t border-border">
+        {userEmail && (
+          <p className="text-ink-soft text-xs truncate px-1 mb-2" title={userEmail}>
+            {userEmail}
+          </p>
+        )}
+        <button
+          onClick={onLogout}
+          disabled={loggingOut}
+          className="flex items-center gap-2.5 w-full px-2 py-2 rounded-lg text-sm text-ink-mute hover:text-expense hover:bg-expense-dim/30 transition-all disabled:opacity-50"
+        >
+          <LogOut size={15} />
+          {loggingOut ? "Saindo..." : "Sair"}
+        </button>
       </div>
     </div>
   );
+}
+
+export default function Sidebar({ userEmail }: { userEmail: string }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("keydown", h);
+    return () => document.removeEventListener("keydown", h);
+  }, []);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   return (
     <>
       {/* Desktop */}
       <div className="hidden lg:block fixed inset-y-0 left-0 z-30 border-r border-border">
-        <Content />
+        <SidebarContent userEmail={userEmail} onLogout={handleLogout} loggingOut={loggingOut} />
       </div>
 
       {/* Mobile trigger */}
@@ -101,7 +134,7 @@ export default function Sidebar() {
           <button onClick={() => setOpen(false)} className="absolute top-5 right-3 btn-icon" aria-label="Fechar menu">
             <X size={16} />
           </button>
-          <Content />
+          <SidebarContent userEmail={userEmail} onLogout={handleLogout} loggingOut={loggingOut} onNavigate={() => setOpen(false)} />
         </div>
       </div>
     </>

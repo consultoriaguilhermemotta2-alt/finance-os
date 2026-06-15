@@ -61,8 +61,9 @@ export function compareMonthKeys(a: string, b: string): number {
 // ── Parcelas ─────────────────────────────────────────────────────────────────
 /**
  * Gera o array de parcelas de uma compra.
- * Ex: gerarParcelas(1200, 6, "2026-04", 1) -> 6 parcelas de R$200,
- * a 1ª marcada "paga", as demais "pendente".
+ * Ex: gerarParcelas(1200, 6, "2026-04") -> 6 parcelas de R$200.
+ * A última parcela absorve a diferença de arredondamento, garantindo que
+ * a soma das parcelas seja sempre exatamente igual a `valorTotal`.
  */
 export function gerarParcelas(
   valorTotal: number,
@@ -71,10 +72,12 @@ export function gerarParcelas(
   parcelasPagas = 0
 ): Parcela[] {
   const valorParcela = Math.round((valorTotal / numeroParcelas) * 100) / 100;
+  const somaPrimeiras = Math.round(valorParcela * (numeroParcelas - 1) * 100) / 100;
+  const valorUltima = Math.round((valorTotal - somaPrimeiras) * 100) / 100;
   return Array.from({ length: numeroParcelas }, (_, i) => ({
     numero: i + 1,
     mesReferencia: addMonths(mesInicial, i),
-    valor: valorParcela,
+    valor: i === numeroParcelas - 1 ? valorUltima : valorParcela,
     status: i < parcelasPagas ? "paga" : "pendente",
   }));
 }

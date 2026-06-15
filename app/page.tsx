@@ -9,8 +9,8 @@ import {
   totalEntradasMes, totalSaidasMes, totalCartoesMes, totalDividasPendentes,
   saldoReal, saldoPrevisto, parcelasDoMes,
 } from "@/lib/calc";
-import { StatCard, Badge, ProgressBar, Money, EmptyState } from "@/components/ui";
-import { ArrowDownToLine, ArrowUpFromLine, CreditCard, Landmark, Target, ChevronRight, CheckCircle2 } from "lucide-react";
+import { StatCard, ProgressBar, Money, EmptyState } from "@/components/ui";
+import { ArrowUpFromLine, CreditCard, Target, ChevronRight, CheckCircle2 } from "lucide-react";
 
 export default function Dashboard() {
   const { entradas, saidas, comprasCartao, dividas, metas, cartoes, updateSaida } = useFinance();

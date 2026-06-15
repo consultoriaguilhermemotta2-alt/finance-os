@@ -124,11 +124,11 @@ export default function SaidasPage() {
           <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute" />
           <input className="input pl-8" placeholder="Buscar descrição ou categoria..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-        <select className="input w-auto" value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value as any)}>
+        <select className="input w-auto" value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value as "todas" | CategoriaSaida)}>
           <option value="todas">Todas categorias</option>
           {CATEGORIAS.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select className="input w-auto" value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value as any)}>
+        <select className="input w-auto" value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value as "todos" | StatusSaida)}>
           <option value="todos">Todos status</option>
           <option value="pago">Pago</option>
           <option value="pendente">Pendente</option>

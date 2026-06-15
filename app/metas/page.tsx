@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useFinance } from "@/lib/store";
 import type { Meta, StatusMeta } from "@/lib/types";
 import { formatBRL, formatDate, percent, sum } from "@/lib/utils";
-import { StatCard, Badge, ProgressBar, Modal, Field, Money, EmptyState } from "@/components/ui";
+import { StatCard, Badge, ProgressBar, Modal, Field, EmptyState } from "@/components/ui";
 import { Plus, Pencil, Trash2, Target, PlusCircle } from "lucide-react";
 
 function calcStatus(valorAtual: number, valorAlvo: number, manual: "em andamento" | "pausada"): StatusMeta {
